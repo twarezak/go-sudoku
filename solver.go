@@ -8,11 +8,13 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"time"
 )
 
 type Sudoku [9][9]int
 
 func main() {
+	start := time.Now()
 	handle, err := os.Open("sudoku.txt")
 
 	if err != nil {
@@ -21,9 +23,16 @@ func main() {
 	defer handle.Close()
 	sudoku := readSudoku(handle)
 
-	sudokus := solve(steps{&sudokuStep{1, sudoku}})
-	sudoku = sudokus[len(sudokus)-1].Sudoku
-	fmt.Println(sudoku, Check(sudoku))
+	sudokuSteps := solve(steps{&sudokuStep{1, sudoku}})
+
+	printSudoku(sudokuSteps[len(sudokuSteps)-1].Sudoku)
+	fmt.Printf("Solved in %dms\n", time.Since(start).Milliseconds())
+}
+
+func printSudoku(sudoku Sudoku) {
+	for _, line :=range sudoku {
+		fmt.Println(line)
+	}
 }
 
 type sudokuStep struct {
